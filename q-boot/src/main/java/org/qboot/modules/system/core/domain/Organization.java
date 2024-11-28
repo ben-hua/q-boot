@@ -1,63 +1,60 @@
-package com.qadmin.demo.sys.domain.model;
+package org.qboot.modules.system.core.domain;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import io.quarkus.runtime.annotations.RegisterForReflection;
+import jakarta.persistence.*;
+import org.hibernate.annotations.GenericGenerator;
+import org.qboot.common.domain.AbstractAuditingEntity;
+import org.qboot.common.domain.UUIDv7Generator;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
-
-import org.hibernate.annotations.GenericGenerator;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.qadmin.demo.common.domain.AbstractAuditingEntity;
-import com.qadmin.demo.common.domain.UUIDv7Generator;
-
-import io.quarkus.runtime.annotations.RegisterForReflection;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "sys_organization")
+@Table(name = "sys_depart")
 @RegisterForReflection
 public class Organization extends AbstractAuditingEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID, generator = "UUIDv7_generator")
+    @GeneratedValue(generator = "UUIDv7_generator")
+//    @GeneratedValue(strategy = GenerationType.UUID, generator = "UUIDv7_generator")
     @GenericGenerator(name = "UUIDv7_generator", type = UUIDv7Generator.class)
-    private UUID id;
+    private String id;
 
+    @Column(name = "depart_name")//TODO 删除name
     private String name;
+    @Column(name = "org_type")//TODO 删除name
     private String type;
+    @Column(name = "org_code")//TODO 删除name
     private String code;
-    @Enumerated(EnumType.STRING)
+    //    @Enumerated(EnumType.STRING)
     private Status status;
+    @Column(name = "depart_name_en")//TODO 删除name
     private String nameEn;
+    @Column(name = "depart_name_abbr")//TODO 删除name
     private String nameAbbr;
     private String description;
+    @Column(name = "depart_order")//TODO 删除name
     private int orderNum;
 
+    @Transient//TODO 删除
     private String website;
+    @Transient//TODO 删除
     private String logoFileId;
     @Column(length = 4000)
     private String areasOfInterest;
+    @Transient//TODO 删除
     private int level;
 
-    @Embedded
+    //    @Embedded
+    @Transient//TODO 删除
     private Contact contact;
 
-    @Embedded
+    //    @Embedded
+    @Transient//TODO 删除
     private Address address;
 
+    @Column(name = "qywx_identifier")//TODO 删除name
     private String enterpriseWebchatID;
 
     @JsonIgnoreProperties
@@ -68,11 +65,11 @@ public class Organization extends AbstractAuditingEntity {
     @OneToMany(targetEntity = Organization.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "parent")
     private List<Organization> children = new ArrayList<>();
 
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(String id) {
         this.id = id;
     }
 

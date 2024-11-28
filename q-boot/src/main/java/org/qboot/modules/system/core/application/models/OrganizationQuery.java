@@ -1,7 +1,4 @@
-package org.qboot.modules.system.core.application.query;
-
-import java.util.UUID;
-
+package org.qboot.modules.system.core.application.models;
 
 import jakarta.ws.rs.HeaderParam;
 import jakarta.ws.rs.QueryParam;
@@ -9,7 +6,7 @@ import org.qboot.modules.system.core.domain.Organization;
 
 public class OrganizationQuery {
     @QueryParam(value = "id")
-    private UUID id;
+    private String id;
 
     @QueryParam(value = "name")
     private String name;
@@ -21,16 +18,16 @@ public class OrganizationQuery {
     private Organization.Status status;
 
     @QueryParam(value = "parentId")
-    private UUID parentId;
+    private String parentId;
 
     @HeaderParam(value = "tenantId")
     private String tenantId;
 
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -66,11 +63,11 @@ public class OrganizationQuery {
         this.tenantId = tenantId;
     }
 
-    public UUID getParentId() {
+    public String getParentId() {
         return parentId;
     }
 
-    public void setParentId(UUID parentId) {
+    public void setParentId(String parentId) {
         this.parentId = parentId;
     }
 }

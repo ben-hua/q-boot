@@ -1,5 +1,6 @@
-package org.qboot.modules.system.core.application.dto;
+package org.qboot.modules.system.core.application.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.qboot.modules.system.core.domain.Address;
 import org.qboot.modules.system.core.domain.Contact;
@@ -7,21 +8,26 @@ import org.qboot.modules.system.core.domain.Contact;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 
 public class OrganizationDTO {
 
     @Schema(readOnly = true)
-    private UUID id;
+    private String id;
 
+    @JsonProperty("departName")
     private String name;
+    @JsonProperty("orgCategory")
     private String type;
+    @JsonProperty("orgCode")
     private String code;
     private String status;
+    @JsonProperty("departNameEn")
     private String nameEn;
+    @JsonProperty("departNameAbbr")
     private String nameAbbr;
     private String description;
+    @JsonProperty("departOrder")
     private int orderNum;
 
     private String website;
@@ -36,28 +42,34 @@ public class OrganizationDTO {
     private String enterpriseWebchatID;
     private String tenantId;
 
-    private UUID parentId;
+    private String parentId;
 
     @Schema(readOnly = true)
     private List<OrganizationDTO> children = new ArrayList<>();
 
+    private Integer isLeaf;
+
+    @JsonProperty("create_by")
     @Schema(readOnly = true)
     private String createdBy = "";
 
+    @JsonProperty("create_time")
     @Schema(readOnly = true)
     private Instant createdDate;
 
+    @JsonProperty("update_by")
     @Schema(readOnly = true)
     private String lastModifiedBy;
 
+    @JsonProperty("update_time")
     @Schema(readOnly = true)
     private Instant lastModifiedDate;
 
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -145,6 +157,14 @@ public class OrganizationDTO {
         return level;
     }
 
+    public Integer getIsLeaf() {
+        return isLeaf;
+    }
+
+    public void setIsLeaf(Integer isLeaf) {
+        this.isLeaf = isLeaf;
+    }
+
     public void setLevel(int level) {
         this.level = level;
     }
@@ -189,11 +209,11 @@ public class OrganizationDTO {
         this.children = children;
     }
 
-    public UUID getParentId() {
+    public String getParentId() {
         return parentId;
     }
 
-    public void setParentId(UUID parentId) {
+    public void setParentId(String parentId) {
         this.parentId = parentId;
     }
 

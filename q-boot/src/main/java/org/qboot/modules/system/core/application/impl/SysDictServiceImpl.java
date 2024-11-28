@@ -1,8 +1,9 @@
-package org.qboot.modules.system.core.application;
+package org.qboot.modules.system.core.application.impl;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import org.qboot.common.constant.CommonConstant;
+import org.qboot.modules.system.core.application.SysDictService;
 import org.qboot.modules.system.core.domain.SysDict;
 import org.qboot.modules.system.core.domain.SysDictItem;
 import org.slf4j.Logger;
@@ -13,7 +14,7 @@ import java.util.Date;
 
 @ApplicationScoped
 @Transactional
-public class SysDictServiceImpl implements SysDictService{
+public class SysDictServiceImpl implements SysDictService {
     private static final Logger LOG = LoggerFactory.getLogger(SysDictServiceImpl.class);
 
     @Override

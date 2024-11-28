@@ -1,16 +1,15 @@
-package com.qadmin.demo.sys.application;
+package org.qboot.modules.system.core.application;
 
-import java.util.UUID;
+import org.qboot.modules.system.core.application.models.OrganizationDTO;
+import org.qboot.modules.system.core.domain.Organization;
 
-import com.qadmin.demo.sys.application.dto.OrganizationDTO;
-import com.qadmin.demo.sys.domain.model.Organization;
 
 public interface OrganizationService {
 
-    OrganizationDTO addOrg(Organization params, UUID parentID);
+    OrganizationDTO addOrg(Organization params, String parentID);
 
     void update(Organization params);
 
-    boolean delete(UUID id);
+    boolean delete(String id);
 
 }

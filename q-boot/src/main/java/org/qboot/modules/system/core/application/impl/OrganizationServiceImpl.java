@@ -1,20 +1,16 @@
-package com.qadmin.demo.sys.application.impl;
-
-import java.util.UUID;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.qadmin.demo.sys.application.OrganizationService;
-import com.qadmin.demo.sys.application.dto.OrganizationDTO;
-import com.qadmin.demo.sys.application.mapper.OrganizationDTOMapper;
-import com.qadmin.demo.sys.domain.model.Organization;
-import com.qadmin.demo.sys.domain.model.OrganizationFactory;
-import com.qadmin.demo.sys.domain.model.OrganizationRepository;
+package org.qboot.modules.system.core.application.impl;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import org.qboot.modules.system.core.application.OrganizationService;
+import org.qboot.modules.system.core.application.models.OrganizationDTO;
+import org.qboot.modules.system.core.application.models.OrganizationDTOMapper;
+import org.qboot.modules.system.core.domain.Organization;
+import org.qboot.modules.system.core.domain.OrganizationFactory;
+import org.qboot.modules.system.core.domain.OrganizationRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @ApplicationScoped
 @Transactional
@@ -28,7 +24,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     OrganizationFactory organizationFactory;
 
     @Override
-    public OrganizationDTO addOrg(Organization params, UUID parentID) {
+    public OrganizationDTO addOrg(Organization params, String parentID) {
         Organization org = organizationFactory.of(params, parentID);
         orgRepository.persist(org);
         LOG.info("new Organization with id {}", org.getId().toString());
@@ -63,7 +59,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
-    public boolean delete(UUID id) {
+    public boolean delete(String id) {
         return orgRepository.deleteById(id);
     }
 

@@ -1,6 +1,5 @@
-package org.qboot.modules.system.core.application.cmd;
+package org.qboot.modules.system.core.application.models;
 
-import com.qadmin.demo.sys.application.dto.OrganizationDTO;
 
 public class OrganizationCmd extends OrganizationDTO {
 

@@ -1,9 +1,4 @@
-package com.qadmin.demo.sys.domain.model;
-
-import java.util.List;
-import java.util.UUID;
-
-import com.qadmin.demo.sys.domain.model.Organization.Status;
+package org.qboot.modules.system.core.domain;
 
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
@@ -12,10 +7,12 @@ import io.quarkus.panache.common.Sort;
 import io.quarkus.panache.common.Sort.Direction;
 import jakarta.enterprise.context.ApplicationScoped;
 
-@ApplicationScoped
-public class OrganizationRepository implements PanacheRepositoryBase<Organization, UUID> {
+import java.util.List;
 
-    public void deleteByIds(List<UUID> ids) {
+@ApplicationScoped
+public class OrganizationRepository implements PanacheRepositoryBase<Organization, String> {
+
+    public void deleteByIds(List<String> ids) {
         delete("id in (?1)", ids);
     }
 
@@ -46,7 +43,7 @@ public class OrganizationRepository implements PanacheRepositoryBase<Organizatio
         long count = livingOrganizations.count();
 
         // and you can chain methods of course
-        return find("status", Status.Alive)
+        return find("status", Organization.Status.Alive)
                 .page(Page.ofSize(25))
                 .nextPage()
                 .stream().toList();

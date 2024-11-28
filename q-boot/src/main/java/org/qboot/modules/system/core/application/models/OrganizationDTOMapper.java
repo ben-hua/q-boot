@@ -1,4 +1,4 @@
-package org.qboot.modules.system.core.application.dto;
+package org.qboot.modules.system.core.application.models;
 
 
 import org.mapstruct.Mapper;
@@ -15,6 +15,7 @@ public interface OrganizationDTOMapper {
     Organization fromDTO(OrganizationDTO cmd);
 
     @Mapping(target = "parentId", source = "parent.id")
+    @Mapping(target = "isLeaf", expression = "java(org.getChildren().size()>0 ? 0:1)")
     OrganizationDTO toDto(Organization org);
 
 }

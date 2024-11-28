@@ -1,52 +1,39 @@
-package com.qadmin.demo.sys.interfaces.rest;
+package org.qboot.modules.system.api;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Optional;
-import java.util.UUID;
-
+import io.quarkus.hibernate.orm.panache.PanacheQuery;
+import io.quarkus.resteasy.reactive.links.InjectRestLinks;
+import io.quarkus.resteasy.reactive.links.RestLink;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriInfo;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.jboss.resteasy.reactive.ResponseStatus;
+import org.qboot.common.Paged;
+import org.qboot.common.domain.QueryVM;
+import org.qboot.common.rest.utils.PaginationUtil;
+import org.qboot.common.rest.vo.PageRequest;
+import org.qboot.common.rest.vo.Result;
+import org.qboot.modules.system.core.application.OrganizationService;
+import org.qboot.modules.system.core.application.models.OrganizationDTO;
+import org.qboot.modules.system.core.application.models.OrganizationDTOMapper;
+import org.qboot.modules.system.core.application.models.OrganizationQuery;
+import org.qboot.modules.system.core.domain.Organization;
+import org.qboot.modules.system.core.domain.OrganizationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.qadmin.demo.common.Paged;
-import com.qadmin.demo.common.domain.QueryVM;
-import com.qadmin.demo.common.rest.utils.PaginationUtil;
-import com.qadmin.demo.common.rest.vo.PageRequest;
-import com.qadmin.demo.sys.application.OrganizationService;
-import com.qadmin.demo.sys.application.dto.OrganizationDTO;
-import com.qadmin.demo.sys.application.mapper.OrganizationDTOMapper;
-import com.qadmin.demo.sys.application.query.OrganizationQuery;
-import com.qadmin.demo.sys.domain.model.Organization;
-import com.qadmin.demo.sys.domain.model.OrganizationRepository;
-
-import io.quarkus.hibernate.orm.panache.PanacheQuery;
-import io.quarkus.rest.data.panache.runtime.sort.SortQueryParamValidator;
-import io.quarkus.resteasy.reactive.links.InjectRestLinks;
-import io.quarkus.resteasy.reactive.links.RestLink;
-import io.quarkus.security.Authenticated;
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
-import jakarta.ws.rs.BeanParam;
-import jakarta.ws.rs.DELETE;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.UriBuilder;
-import jakarta.ws.rs.core.UriInfo;
+import java.util.*;
 
 @Path("/api/sys/organizations")
-@Authenticated
+//@Authenticated
 public class OrganizationResource {
     private final Logger LOG = LoggerFactory.getLogger(OrganizationResource.class);
 
@@ -61,7 +48,7 @@ public class OrganizationResource {
     @InjectRestLinks
     @RestLink(entityType = Organization.class, rel = "add")
     @APIResponse(responseCode = "201", content = {
-            @Content(mediaType = "application/json", schema = @Schema(implementation = Organization.class)) })
+            @Content(mediaType = "application/json", schema = @Schema(implementation = Organization.class))})
     public Response add(@Valid OrganizationDTO cmd, @Context UriInfo uriInfo) {
         Organization org = OrganizationDTOMapper.INSTANCE.fromDTO(cmd);
         OrganizationDTO result = orgService.addOrg(org, cmd.getParentId());
@@ -75,7 +62,7 @@ public class OrganizationResource {
     @Path("/{id}")
     @PUT
     @RestLink(entityType = Organization.class, rel = "update")
-    public void update(@PathParam("id") UUID id, OrganizationDTO cmd) {
+    public void update(@PathParam("id") String id, OrganizationDTO cmd) {
         Organization org = OrganizationDTOMapper.INSTANCE.fromDTO(cmd);
         org.setId(id);
         orgService.update(org);
@@ -85,20 +72,19 @@ public class OrganizationResource {
     @Path("/{id}")
     @DELETE
     @ResponseStatus(204)
-    public void delete(@PathParam("id") UUID id) {
+    public void delete(@PathParam("id") String id) {
         orgService.delete(id);
     }
 
     @GET
     @InjectRestLinks
-    @Produces(value = { "application/json" })
+    @Produces(value = {"application/json"})
     @RestLink(entityType = OrganizationDTO.class, rel = "list")
     @APIResponse(responseCode = "200", content = {
-            @Content(mediaType = "application/json", schema = @Schema(implementation = OrganizationDTO.class, type = SchemaType.ARRAY)) })
-    @SortQueryParamValidator
+            @Content(mediaType = "application/json", schema = @Schema(implementation = OrganizationDTO.class, type = SchemaType.ARRAY))})
     @Transactional
     public Response list(@BeanParam OrganizationQuery parameters,
-            @BeanParam PageRequest pageRequest, @Context UriInfo uriInfo) {
+                         @BeanParam PageRequest pageRequest, @Context UriInfo uriInfo) {
 
         var page = pageRequest.toPage();
         var sort = pageRequest.toSort();
@@ -121,13 +107,34 @@ public class OrganizationResource {
         return response.build();
     }
 
+    @Path("/all")
+    @GET
+    @Produces(value = {"application/json"})
+    @Transactional
+    public Response listAll(@BeanParam OrganizationQuery parameters) {
+        Result<List<OrganizationDTO>> result = new Result<>();
+
+        QueryVM queryVM = toQueryVM(parameters);
+        // LOG.info("queryVM: {},{} ", queryVM.getWhere(), queryVM.getParams().toString());
+        PanacheQuery<Organization> livingOrganizations = organizationRepository
+                .find(queryVM.getWhere(), queryVM.getParams());
+        var list = livingOrganizations.stream().map(OrganizationDTOMapper.INSTANCE::toDto).toList();
+
+
+        result.setSuccess(true);
+        result.setResult(list);
+
+        var response = Response.ok().entity(result);
+        return response.build();
+    }
+
     @Path(value = "/{id}")
     @GET
-    @Produces(value = { "application/json" })
+    @Produces(value = {"application/json"})
     @APIResponse(responseCode = "200", content = {
-            @Content(mediaType = "application/json", schema = @Schema(implementation = OrganizationDTO.class)) })
+            @Content(mediaType = "application/json", schema = @Schema(implementation = OrganizationDTO.class))})
     @RestLink(entityType = OrganizationDTO.class, rel = "self")
-    public OrganizationDTO get(@PathParam("id") UUID id) {
+    public OrganizationDTO get(@PathParam("id") String id) {
         Optional<Organization> orgOp = organizationRepository.findByIdOptional(id);
         if (orgOp.isEmpty()) {
             return null;
@@ -171,7 +178,7 @@ public class OrganizationResource {
         }
         if (parameters.getParentId() != null) {
             if (parameters.getParentId()
-                    .equals(UUID.fromString("00000000-0000-0000-0000-000000000000"))) {
+                    .equals(UUID.fromString("00000000-0000-0000-0000-000000000000").toString())) {
                 arrayList.add("parent.id is null");
 
             } else {
@@ -179,7 +186,7 @@ public class OrganizationResource {
                 hashMap.put("parentId", parameters.getParentId());
             }
         }
-        if (arrayList.size() > 0) {
+        if (!arrayList.isEmpty()) {
             queryVM.setWhere(String.join(" AND ", arrayList));
             queryVM.setParams(hashMap);
         }

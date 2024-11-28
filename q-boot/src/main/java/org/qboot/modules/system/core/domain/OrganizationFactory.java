@@ -1,10 +1,9 @@
-package com.qadmin.demo.sys.domain.model;
-
-import java.util.Optional;
-import java.util.UUID;
+package org.qboot.modules.system.core.domain;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+
+import java.util.Optional;
 
 @ApplicationScoped
 public class OrganizationFactory {
@@ -12,7 +11,7 @@ public class OrganizationFactory {
     @Inject
     private OrganizationRepository organizationRepository;
 
-    public Organization of(Organization org, UUID parentID) {
+    public Organization of(Organization org, String parentID) {
         final Organization parent = findParent(parentID);
         org.setParent(parent);
         org.setLevel(parent != null ? parent.getLevel() + 1 : 0);
@@ -22,7 +21,7 @@ public class OrganizationFactory {
         return org;
     }
 
-    private Organization findParent(UUID id) {
+    private Organization findParent(String id) {
         if (id == null) {
             return null;
         }
